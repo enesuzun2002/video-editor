@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_editor/view/video_thumbnail.dart';
+import 'package:video_editor/view/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const VideoThumbnailView(),
+      home: const HomeScreen(),
     );
   }
 }
