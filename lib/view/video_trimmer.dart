@@ -1,17 +1,23 @@
 import 'dart:io';
+import 'dart:html' as html;
 
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:video_player/video_player.dart';
+
+import '../widget/web_video_player.dart';
 
 class VideoTrimmer extends StatefulWidget {
   const VideoTrimmer({
     super.key,
     required this.video,
+    this.mimeType = "video/mp4",
   });
-  final File video;
+  final dynamic video;
+  final String mimeType;
 
   @override
   State<VideoTrimmer> createState() => _VideoTrimmerState();
@@ -21,27 +27,48 @@ class _VideoTrimmerState extends State<VideoTrimmer> {
   String _trimmedVideoPath = "";
   VideoPlayerController? _originalController;
   VideoPlayerController? _trimmedController;
-  late RangeValues _rangeValues;
+  RangeValues _rangeValues = RangeValues(
+    0.0,
+    30.0,
+  );
 
   @override
   void initState() {
-    _originalController = VideoPlayerController.file(widget.video);
-    _originalController!.initialize().then((value) {
-      _rangeValues = RangeValues(
-        0.0,
-        _originalController!.value.duration.inSeconds <= 30
-            ? _originalController!.value.duration.inSeconds.toDouble()
-            : 30.0,
-      );
-      setState(() {});
-    });
-    _originalController!.play();
     super.initState();
+    _initializeVideoPlayer();
+  }
+
+  void _initializeVideoPlayer() {
+    if (kIsWeb) return;
+    print("Initializing video player...");
+
+    try {
+      _originalController = VideoPlayerController.file(widget.video);
+      print("Initialized video from file: ${widget.video}");
+      if (_originalController != null) {
+        _originalController?.initialize().then((value) {
+          print("Video player initialized successfully.");
+          setState(() {});
+        }).catchError((error) {
+          print("Error during video initialization: $error");
+        });
+
+        _originalController?.play().then((_) {
+          print("Video started playing.");
+        }).catchError((error) {
+          print("Error playing video: $error");
+        });
+      } else {
+        print("Video controller is null.");
+      }
+    } catch (e) {
+      print("Error initializing video file: $e");
+    }
   }
 
   @override
   void dispose() {
-    _originalController!.dispose();
+    _originalController?.dispose();
     super.dispose();
   }
 
@@ -83,18 +110,26 @@ class _VideoTrimmerState extends State<VideoTrimmer> {
             SizedBox(
               height: 400,
               child: AspectRatio(
-                aspectRatio: _originalController!.value.aspectRatio,
-                child: _trimmedController == null
-                    ? VideoPlayer(_originalController!)
-                    : VideoPlayer(_trimmedController!),
+                aspectRatio: 16 / 9,
+                child: kIsWeb
+                    ? WebVideoPlayer(
+                        id: "video",
+                        bytes: widget.video,
+                        mimeType: widget.mimeType)
+                    : _trimmedController == null
+                        ? _originalController == null
+                            ? SizedBox()
+                            : VideoPlayer(_originalController!)
+                        : VideoPlayer(_trimmedController!),
               ),
             ),
             if (_trimmedController == null) ...[
-              RangeSlider(
+              /* RangeSlider(
                 min: 0.0,
-                max: _originalController!.value.duration.inSeconds.toDouble(),
+                max: _originalController?.value.duration.inSeconds.toDouble() ??
+                    30.0,
                 values: _rangeValues,
-                divisions: _originalController!.value.duration.inSeconds,
+                divisions: _originalController?.value.duration.inSeconds,
                 labels: RangeLabels(
                   _rangeValues.start.round().toString(),
                   _rangeValues.end.round().toString(),
@@ -102,23 +137,19 @@ class _VideoTrimmerState extends State<VideoTrimmer> {
                 onChanged: (RangeValues value) {
                   setState(() {
                     if (value.end - value.start <= 30) {
-                      if (!(_originalController!.value.isPlaying)) {
-                        _originalController!.play();
+                      if (!(_originalController?.value.isPlaying ?? true)) {
+                        _originalController?.play();
                       }
-                      _originalController!
-                          .seekTo(Duration(seconds: value.start.toInt()));
+                      _originalController
+                          ?.seekTo(Duration(seconds: value.start.toInt()));
                       _rangeValues = value;
                     }
                   });
                 },
-              ),
-              Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.play_arrow),
-                    onPressed: _trimVideo,
-                  ),
-                ],
+              ), */
+              IconButton(
+                icon: const Icon(Icons.play_arrow),
+                onPressed: _trimVideo,
               ),
             ]
           ],
