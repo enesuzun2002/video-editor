@@ -1,28 +1,13 @@
-import 'dart:io';
-
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:video_editor/business_logic/ffmpeg/ffmpeg_controller.dart';
 
-class VideoThumbnailScreen extends StatefulWidget {
-  const VideoThumbnailScreen({super.key, required this.video});
-  final File video;
-
-  @override
-  State<VideoThumbnailScreen> createState() => _VideoThumbnailScreenState();
-}
-
-class _VideoThumbnailScreenState extends State<VideoThumbnailScreen> {
-  String filePath = "";
+class VideoThumbnailScreen extends ConsumerWidget {
+  const VideoThumbnailScreen({super.key});
 
   @override
-  void initState() {
-    getVideoThumbnail();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var ffmpegControllerNotifier = ref.watch(ffmpegControllerProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -31,26 +16,21 @@ class _VideoThumbnailScreenState extends State<VideoThumbnailScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (filePath != "")
-            Image.file(
-              File(filePath),
-            ),
+          Center(
+            child: FutureBuilder(
+                future: ffmpegControllerNotifier.getVideoThumbnail(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(
+                        "Error occured trying to get thumbnail for selected video file!\n\n${snapshot.error.toString()}");
+                  } else if (snapshot.hasData) {
+                    return Image.memory(snapshot.data!);
+                  }
+                  return CircularProgressIndicator();
+                }),
+          ),
         ],
       ),
     );
-  }
-
-  void getVideoThumbnail() async {
-    String thumbnailPath = widget.video.path.replaceRange(
-        widget.video.path.length - 3, widget.video.path.length, "jpg");
-    String command =
-        "-i ${widget.video.path} -ss 2 -vframes 1 -vf scale=-1:400 -f image2 $thumbnailPath";
-    FFmpegKit.execute(command).then((session) async {
-      final returnCode = await session.getReturnCode();
-      if (ReturnCode.isSuccess(returnCode)) {
-        filePath = thumbnailPath;
-        setState(() {});
-      }
-    });
   }
 }

@@ -1,157 +1,66 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_editor/features/thumbnail/screen/web_video_thumbnail.dart';
-import 'package:video_editor/view/video_trimmer.dart';
+import 'package:video_editor/business_logic/ffmpeg/ffmpeg_controller.dart';
+import 'package:video_editor/widgets/padding_box.dart';
+import 'package:video_editor/widgets/pick_video_bottom_sheet.dart';
 
 import '../features/thumbnail/screen/video_thumbnail.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var ffmpegController = ref.watch(ffmpegControllerProvider);
+    var ffmpegControllerNotifier = ref.watch(ffmpegControllerProvider.notifier);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Video Editor"),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            getButton(
-                context,
-                const Text(
-                  "Video Thumbnail",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                  ),
-                ),
-                0),
-            getButton(
-                context,
-                const Text(
-                  "Video Trimmer",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                  ),
-                ),
-                1),
-          ],
+        appBar: AppBar(
+          title: const Text("Video Editor"),
+          centerTitle: true,
         ),
-      ),
-    );
-  }
-
-  ElevatedButton getButton(BuildContext context, Widget child, int type) {
-    return ElevatedButton(
-      onPressed: () async {
-        if (kIsWeb) {
-          final video =
-              await ImagePicker().pickVideo(source: ImageSource.gallery);
-          if (video != null) {
-            if (!context.mounted) return;
-            if (type == 0) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          WebVideoThumbnailScreen(video: video)));
-            } else {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          VideoTrimmer(video: File(video.path))));
-            }
-          }
-        } else {
-          showModalBottomSheet(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(25.0),
-                  topRight: Radius.circular(25.0)),
-            ),
-            context: context,
-            builder: (context) {
-              // Using Wrap makes the bottom sheet height the height of the content.
-              // Otherwise, the height will be half the height of the screen.
-              return Wrap(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Center(
-                      child: child,
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(
-                        top: 16.0, left: 16.0, right: 16.0),
-                    child: Column(
+        body: Center(
+            child: ffmpegController.ffmpeg.when(
+                data: (ffmpeg) => Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ListTile(
-                          onTap: () async {
-                            final video = await ImagePicker()
-                                .pickVideo(source: ImageSource.camera);
-                            if (video != null) {
-                              if (type == 0) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            VideoThumbnailScreen(
-                                                video: File(video.path))));
-                              } else {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => VideoTrimmer(
-                                            video: File(video.path))));
+                        if (ffmpegController.videoFile != null)
+                          Text(
+                              "Selected video file: ${ffmpegController.videoFile!.name}"),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (kIsWeb) {
+                              final video = await ImagePicker()
+                                  .pickVideo(source: ImageSource.gallery);
+                              if (video != null) {
+                                ffmpegControllerNotifier.setPickedVideo(video);
                               }
+                            } else {
+                              PickVideoBottomSheet.show(context, ref);
                             }
                           },
-                          leading: const Icon(Icons.camera),
-                          title: const Text(
-                            "Take video from camera",
-                          ),
+                          child: Text("Select Video File"),
                         ),
-                        ListTile(
-                          onTap: () async {
-                            final video = await ImagePicker()
-                                .pickVideo(source: ImageSource.gallery);
-                            if (video != null) {
-                              if (type == 0) {
+                        if (ffmpegController.videoFile != null) ...[
+                          PaddingBox.m,
+                          ElevatedButton(
+                              onPressed: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            VideoThumbnailScreen(
-                                                video: File(video.path))));
-                              } else {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => VideoTrimmer(
-                                            video: File(video.path))));
-                              }
-                            }
-                          },
-                          leading: const Icon(Icons.file_present),
-                          title: const Text("Select video from gallery"),
-                        )
+                                            VideoThumbnailScreen()));
+                              },
+                              child: Text("Video Thumbnail Generator")),
+                          PaddingBox.m,
+                          ElevatedButton(
+                              onPressed: () {}, child: Text("Video Trimmer")),
+                        ],
                       ],
                     ),
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      },
-      child: child,
-    );
+                error: (error, stackTrace) =>
+                    Text("Error occured: ${error.toString()}"),
+                loading: () => CircularProgressIndicator())));
   }
 }
