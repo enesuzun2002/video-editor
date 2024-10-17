@@ -9,5 +9,6 @@ part 'ffmpeg_state.freezed.dart';
 class FfmpegState with _$FfmpegState {
   const factory FfmpegState(
       {@Default(AsyncLoading()) AsyncValue<FFmpeg?> ffmpeg,
+      AsyncValue<String?>? output,
       XFile? videoFile}) = _FfmpegState;
 }

@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$FfmpegState {
   AsyncValue<FFmpeg?> get ffmpeg => throw _privateConstructorUsedError;
+  AsyncValue<String?>? get output => throw _privateConstructorUsedError;
   XFile? get videoFile => throw _privateConstructorUsedError;
 
   /// Create a copy of FfmpegState
@@ -32,7 +33,10 @@ abstract class $FfmpegStateCopyWith<$Res> {
           FfmpegState value, $Res Function(FfmpegState) then) =
       _$FfmpegStateCopyWithImpl<$Res, FfmpegState>;
   @useResult
-  $Res call({AsyncValue<FFmpeg?> ffmpeg, XFile? videoFile});
+  $Res call(
+      {AsyncValue<FFmpeg?> ffmpeg,
+      AsyncValue<String?>? output,
+      XFile? videoFile});
 }
 
 /// @nodoc
@@ -51,6 +55,7 @@ class _$FfmpegStateCopyWithImpl<$Res, $Val extends FfmpegState>
   @override
   $Res call({
     Object? ffmpeg = null,
+    Object? output = freezed,
     Object? videoFile = freezed,
   }) {
     return _then(_value.copyWith(
@@ -58,6 +63,10 @@ class _$FfmpegStateCopyWithImpl<$Res, $Val extends FfmpegState>
           ? _value.ffmpeg
           : ffmpeg // ignore: cast_nullable_to_non_nullable
               as AsyncValue<FFmpeg?>,
+      output: freezed == output
+          ? _value.output
+          : output // ignore: cast_nullable_to_non_nullable
+              as AsyncValue<String?>?,
       videoFile: freezed == videoFile
           ? _value.videoFile
           : videoFile // ignore: cast_nullable_to_non_nullable
@@ -74,7 +83,10 @@ abstract class _$$FfmpegStateImplCopyWith<$Res>
       __$$FfmpegStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AsyncValue<FFmpeg?> ffmpeg, XFile? videoFile});
+  $Res call(
+      {AsyncValue<FFmpeg?> ffmpeg,
+      AsyncValue<String?>? output,
+      XFile? videoFile});
 }
 
 /// @nodoc
@@ -91,6 +103,7 @@ class __$$FfmpegStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? ffmpeg = null,
+    Object? output = freezed,
     Object? videoFile = freezed,
   }) {
     return _then(_$FfmpegStateImpl(
@@ -98,6 +111,10 @@ class __$$FfmpegStateImplCopyWithImpl<$Res>
           ? _value.ffmpeg
           : ffmpeg // ignore: cast_nullable_to_non_nullable
               as AsyncValue<FFmpeg?>,
+      output: freezed == output
+          ? _value.output
+          : output // ignore: cast_nullable_to_non_nullable
+              as AsyncValue<String?>?,
       videoFile: freezed == videoFile
           ? _value.videoFile
           : videoFile // ignore: cast_nullable_to_non_nullable
@@ -109,17 +126,20 @@ class __$$FfmpegStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FfmpegStateImpl implements _FfmpegState {
-  const _$FfmpegStateImpl({this.ffmpeg = const AsyncLoading(), this.videoFile});
+  const _$FfmpegStateImpl(
+      {this.ffmpeg = const AsyncLoading(), this.output, this.videoFile});
 
   @override
   @JsonKey()
   final AsyncValue<FFmpeg?> ffmpeg;
   @override
+  final AsyncValue<String?>? output;
+  @override
   final XFile? videoFile;
 
   @override
   String toString() {
-    return 'FfmpegState(ffmpeg: $ffmpeg, videoFile: $videoFile)';
+    return 'FfmpegState(ffmpeg: $ffmpeg, output: $output, videoFile: $videoFile)';
   }
 
   @override
@@ -128,12 +148,13 @@ class _$FfmpegStateImpl implements _FfmpegState {
         (other.runtimeType == runtimeType &&
             other is _$FfmpegStateImpl &&
             (identical(other.ffmpeg, ffmpeg) || other.ffmpeg == ffmpeg) &&
+            (identical(other.output, output) || other.output == output) &&
             (identical(other.videoFile, videoFile) ||
                 other.videoFile == videoFile));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, ffmpeg, videoFile);
+  int get hashCode => Object.hash(runtimeType, ffmpeg, output, videoFile);
 
   /// Create a copy of FfmpegState
   /// with the given fields replaced by the non-null parameter values.
@@ -147,10 +168,13 @@ class _$FfmpegStateImpl implements _FfmpegState {
 abstract class _FfmpegState implements FfmpegState {
   const factory _FfmpegState(
       {final AsyncValue<FFmpeg?> ffmpeg,
+      final AsyncValue<String?>? output,
       final XFile? videoFile}) = _$FfmpegStateImpl;
 
   @override
   AsyncValue<FFmpeg?> get ffmpeg;
+  @override
+  AsyncValue<String?>? get output;
   @override
   XFile? get videoFile;
 

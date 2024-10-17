@@ -48,4 +48,9 @@ class FfmpegController extends Notifier<FfmpegState> {
     return ffmpegService.getVideoThumbnail(state.videoFile!,
         ffmpeg: state.ffmpeg.value);
   }
+
+  Future<String> trimVideo(String start, String duration) {
+    return ffmpegService.trimVideo(state.videoFile!, start, duration,
+        ffmpeg: state.ffmpeg.value);
+  }
 }

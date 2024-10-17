@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_editor/business_logic/ffmpeg/ffmpeg_controller.dart';
+import 'package:video_editor/features/trimmer/screen/video_trimmer.dart';
 import 'package:video_editor/widgets/padding_box.dart';
 import 'package:video_editor/widgets/pick_video_bottom_sheet.dart';
 
@@ -45,17 +46,20 @@ class HomeScreen extends ConsumerWidget {
                         if (ffmpegController.videoFile != null) ...[
                           PaddingBox.m,
                           ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            VideoThumbnailScreen()));
-                              },
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          VideoThumbnailScreen())),
                               child: Text("Video Thumbnail Generator")),
                           PaddingBox.m,
                           ElevatedButton(
-                              onPressed: () {}, child: Text("Video Trimmer")),
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          VideoTrimmerScreen())),
+                              child: Text("Video Trimmer")),
                         ],
                       ],
                     ),
