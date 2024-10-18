@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_editor/features/trimmer/business_logic/trimmer_controller.dart';
+import 'package:video_editor/features/video-player/screen/video_player.dart';
 import 'package:video_editor/widgets/padding_box.dart';
 import 'package:video_player/video_player.dart';
 
@@ -104,18 +105,21 @@ class _VideoTrimmerState extends ConsumerState<VideoTrimmerScreen> {
               PaddingBox.m,
               if (trimmerController.outputController != null)
                 trimmerController.outputController!.when(
-                  data: (data) => Column(
-                    children: [
-                      Text("Trimmed Video"),
-                      SizedBox(
-                        height: 400,
-                        child: AspectRatio(
-                          aspectRatio: data!.value.aspectRatio,
-                          child: VideoPlayer(data),
+                  data: (data) {
+                    // Defer the navigation until the widget tree is fully built
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      trimmerController.inputController.value?.pause();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerScreen(
+                              videoPlayerController:
+                                  trimmerController.outputController!.value!),
                         ),
-                      ),
-                    ],
-                  ),
+                      );
+                    });
+                    return SizedBox();
+                  },
                   error: (error, stackTrace) => Text("Error: $error"),
                   loading: () => CircularProgressIndicator(),
                 ),
