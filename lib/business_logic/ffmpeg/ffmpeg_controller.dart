@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:video_editor/business_logic/ffmpeg/ffmpeg_operation.dart';
 import 'package:video_editor/business_logic/ffmpeg/ffmpeg_state.dart';
 import 'ffmpeg_service.dart';
 
@@ -50,7 +51,12 @@ class FfmpegController extends Notifier<FfmpegState> {
   }
 
   Future<String> trimVideo(String start, String duration) {
-    return ffmpegService.trimVideo(state.videoFile!, start, duration,
+    return ffmpegService.editVideo(state.videoFile!, start: start, duration: duration,
         ffmpeg: state.ffmpeg.value);
+  }
+
+  Future<String> compressVideo() {
+    return ffmpegService.editVideo(state.videoFile!,
+        ffmpeg: state.ffmpeg.value, operation: FfmpegOperation.compress);
   }
 }

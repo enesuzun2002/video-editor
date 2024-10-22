@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
+import 'package:video_editor/business_logic/ffmpeg/ffmpeg_operation.dart';
 
 final ffmpegServiceProvider = Provider<FfmpegService>((ref) {
   return FfmpegService();
@@ -84,15 +85,20 @@ class FfmpegService {
     return ffmpeg.readFile(outputFile);
   }
 
-  Future<String> trimVideo(XFile video, String start, String duration,
-      {FFmpeg? ffmpeg}) async {
+  Future<String> editVideo(XFile video,
+      {String? start,
+      String? duration,
+      FFmpeg? ffmpeg,
+      FfmpegOperation operation = FfmpegOperation.trim}) async {
     List<String> command = [
-      // start
-      "-ss",
-      start,
-      // duration
-      "-t",
-      duration,
+      if (operation == FfmpegOperation.trim) ...[
+        // start
+        "-ss",
+        start!,
+        // duration
+        "-t",
+        duration!,
+      ],
       // scale
       "-vf",
       "scale='if(gt(iw/ih,1),-2,720)':'if(gt(iw/ih,1),720,-2)'",
@@ -105,26 +111,53 @@ class FfmpegService {
       // audio codec
       "-c:a",
       "aac",
-      // codec preset
+      // lower audio bitrate
+      "-b:a",
+      "128k",
+      // codec preset (faster => ultrafast)
       "-preset",
-      "fast",
+      "superfast",
+      // Constant Rate Factor (lower means better quality, higher means faster)
+      "-crf",
+      "25",
+      // fast start for streaming
+      "-movflags",
+      "+faststart",
     ];
+
+    // Start the timer
+    final startTime = DateTime.now();
+
     if (kIsWeb) {
       if (ffmpeg == null || !ffmpeg.isLoaded()) throw ("FFMPEG isn't loaded!");
-      return await compute(_trimVideoWeb, {
+      final result = await compute(_editVideoWeb, {
         "video": video,
         "command": command.join(" "),
         "ffmpeg": ffmpeg,
       });
+
+      // Stop the timer
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+      debugPrint("Video editing completed in: ${duration.inSeconds} seconds");
+
+      return result;
     } else {
-      return await compute(_trimVideo, {
+      final result = await compute(_editVideo, {
         "video": video,
         "command": command.join(" "),
       });
+
+      // Stop the timer
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+      debugPrint("Video editing completed in: ${duration.inSeconds} seconds");
+
+      return result;
     }
   }
 
-  Future<String> _trimVideo(Map<String, dynamic> args) async {
+  Future<String> _editVideo(Map<String, dynamic> args) async {
     // Args
     XFile video = args["video"];
     String command = args["command"];
@@ -147,7 +180,7 @@ class FfmpegService {
     });
   }
 
-  Future<String> _trimVideoWeb(Map<String, dynamic> args) async {
+  Future<String> _editVideoWeb(Map<String, dynamic> args) async {
     // Args
     XFile video = args["video"];
     FFmpeg ffmpeg = args["ffmpeg"];
