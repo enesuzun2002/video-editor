@@ -17,6 +17,8 @@ class VideoTrimmerScreen extends ConsumerStatefulWidget {
 }
 
 class _VideoTrimmerState extends ConsumerState<VideoTrimmerScreen> {
+  String outputPath = "";
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     var ffmpegController = ref.watch(ffmpegControllerProvider);
@@ -82,7 +84,9 @@ class _VideoTrimmerState extends ConsumerState<VideoTrimmerScreen> {
                       ),
                       ElevatedButton.icon(
                         onPressed: () async {
-                          String path = await ffmpegControllerNotifier.trimVideo(
+                          isLoading = true;
+                          setState(() {});
+                          outputPath = await ffmpegControllerNotifier.trimVideo(
                               data.start.toInt() < 10
                                   ? "00:00:0${data.start.toInt()}"
                                   : "00:00:${data.start.toInt()}",
@@ -91,7 +95,9 @@ class _VideoTrimmerState extends ConsumerState<VideoTrimmerScreen> {
                                   : "00:00:${(data.end - data.start).toInt()}");
 
                           trimmerControllerNotifier
-                              .createOutputController(path);
+                              .createOutputController(outputPath);
+                          isLoading = false;
+                          setState(() {});
                         },
                         label: Text("Trim Video"),
                         icon: Icon(Icons.play_arrow),
@@ -102,6 +108,7 @@ class _VideoTrimmerState extends ConsumerState<VideoTrimmerScreen> {
                 error: (error, stackTrace) => Text("Error: $error"),
                 loading: () => CircularProgressIndicator(),
               ),
+              if (isLoading) ...[PaddingBox.m, CircularProgressIndicator()],
               PaddingBox.m,
               if (trimmerController.outputController != null)
                 trimmerController.outputController!.when(
@@ -113,8 +120,11 @@ class _VideoTrimmerState extends ConsumerState<VideoTrimmerScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => VideoPlayerScreen(
-                              videoPlayerController:
-                                  trimmerController.outputController!.value!),
+                            videoPlayerController:
+                                trimmerController.outputController!.value!,
+                            fileName: ffmpegController.videoFile?.name,
+                            url: outputPath,
+                          ),
                         ),
                       );
                     });

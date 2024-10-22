@@ -86,26 +86,56 @@ class FfmpegService {
 
   Future<String> trimVideo(XFile video, String start, String duration,
       {FFmpeg? ffmpeg}) async {
+    List<String> command = [
+      // start
+      "-ss",
+      start,
+      // duration
+      "-t",
+      duration,
+      // scale
+      "-vf",
+      "scale='if(gt(iw/ih,1),-2,720)':'if(gt(iw/ih,1),720,-2)'",
+      // video codec
+      "-c:v",
+      "libx264",
+      // pixel format
+      "-pix_fmt",
+      "yuv420p",
+      // audio codec
+      "-c:a",
+      "aac",
+      // codec preset
+      "-preset",
+      "fast",
+    ];
     if (kIsWeb) {
       if (ffmpeg == null || !ffmpeg.isLoaded()) throw ("FFMPEG isn't loaded!");
-      return await _trimVideoWeb(video, start, duration, ffmpeg: ffmpeg);
+      return await compute(_trimVideoWeb, {
+        "video": video,
+        "command": command.join(" "),
+        "ffmpeg": ffmpeg,
+      });
     } else {
-      return await _trimVideo(video, start, duration);
+      return await compute(_trimVideo, {
+        "video": video,
+        "command": command.join(" "),
+      });
     }
   }
 
-  Future<String> _trimVideo(
-    XFile video,
-    String start,
-    String duration,
-  ) async {
+  Future<String> _trimVideo(Map<String, dynamic> args) async {
+    // Args
+    XFile video = args["video"];
+    String command = args["command"];
+
     String trimmedVideoPath = "${dirname(video.path)}/trimmed_video.mp4";
     final outputFile = File(trimmedVideoPath);
     if (await outputFile.exists()) {
       outputFile.delete();
     }
     return await FFmpegKit.execute(
-            "-i ${video.path} -ss $start -t $duration -c:a aac $trimmedVideoPath")
+            "-i ${video.path} $command $trimmedVideoPath")
         .then((session) async {
       final returnCode = await session.getReturnCode();
 
@@ -117,21 +147,21 @@ class FfmpegService {
     });
   }
 
-  Future<String> _trimVideoWeb(XFile video, String start, String duration,
-      {required FFmpeg ffmpeg}) async {
+  Future<String> _trimVideoWeb(Map<String, dynamic> args) async {
+    // Args
+    XFile video = args["video"];
+    FFmpeg ffmpeg = args["ffmpeg"];
+    String command = args["command"];
+
     String inputFile = video.name;
-    String outputFile =
-        inputFile.replaceRange(inputFile.length - 3, inputFile.length, "mp4");
+    String outputFile = "output.mp4";
 
     var data = await video.readAsBytes();
 
     ffmpeg.writeFile(inputFile, data);
 
-    await ffmpeg.runCommand(
-        "-i $inputFile -ss $start -t $duration -c:a aac $outputFile");
+    await ffmpeg.runCommand("-i $inputFile $command $outputFile");
 
-    return Uri.base
-        .resolve(XFile.fromData(ffmpeg.readFile(outputFile)).path)
-        .toString();
+    return XFile.fromData(ffmpeg.readFile(outputFile)).path;
   }
 }
