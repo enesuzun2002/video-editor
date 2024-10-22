@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:video_editor/business_logic/download/download_service.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../widgets/animated_play_button.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final VideoPlayerController videoPlayerController;
+  final String? url;
+  final String? fileName;
   const VideoPlayerScreen({
     super.key,
     required this.videoPlayerController,
+    this.url,
+    this.fileName,
   });
 
   @override
@@ -41,9 +46,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text("Video Player"),
+        actions: [
+          if (widget.url != null && widget.fileName != null)
+            ElevatedButton.icon(
+              onPressed: () => DownloadService.downloadFile(widget.url!,
+                  fileName: widget.fileName!),
+              label: Text("Download"),
+              icon: Icon(Icons.download),
+            )
+        ],
       ),
       body: Center(
         child: Stack(
+          alignment: AlignmentDirectional.center,
           children: [
             SizedBox(
               height: widget.videoPlayerController.value.size.height,
