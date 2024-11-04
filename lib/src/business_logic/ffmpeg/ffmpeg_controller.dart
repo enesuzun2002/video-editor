@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_editor/business_logic/ffmpeg/ffmpeg_operation.dart';
-import 'package:video_editor/business_logic/ffmpeg/ffmpeg_state.dart';
-import 'ffmpeg_service.dart';
+import 'ffmpeg_operation.dart';
+import 'ffmpeg_state.dart';
+import 'service/core.dart';
 
 final ffmpegControllerProvider =
     NotifierProvider<FfmpegController, FfmpegState>(() {
@@ -41,22 +41,18 @@ class FfmpegController extends Notifier<FfmpegState> {
     }
   }
 
-  void setPickedVideo(XFile videoFile) async {
-    state = state.copyWith(videoFile: videoFile);
-  }
-
-  Future<Uint8List> getVideoThumbnail() {
-    return ffmpegService.getVideoThumbnail(state.videoFile!,
+  Future<String> getVideoThumbnail(XFile videoFile) {
+    return ffmpegService.getVideoThumbnail(videoFile,
         ffmpeg: state.ffmpeg.value);
   }
 
-  Future<String> trimVideo(String start, String duration) {
-    return ffmpegService.editVideo(state.videoFile!, start: start, duration: duration,
-        ffmpeg: state.ffmpeg.value);
+  Future<String> trimVideo(XFile videoFile, String start, String duration) {
+    return ffmpegService.editVideo(videoFile,
+        start: start, duration: duration, ffmpeg: state.ffmpeg.value);
   }
 
-  Future<String> compressVideo() {
-    return ffmpegService.editVideo(state.videoFile!,
+  Future<String> compressVideo(XFile videoFile) {
+    return ffmpegService.editVideo(videoFile,
         ffmpeg: state.ffmpeg.value, operation: FfmpegOperation.compress);
   }
 }
