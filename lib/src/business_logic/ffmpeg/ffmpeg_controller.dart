@@ -1,58 +1,48 @@
+import 'package:cross_file/cross_file.dart';
+import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'ffmpeg_operation.dart';
-import 'ffmpeg_state.dart';
 import 'service/core.dart';
 
-final ffmpegControllerProvider =
-    NotifierProvider<FfmpegController, FfmpegState>(() {
-  return FfmpegController();
-});
-
-class FfmpegController extends Notifier<FfmpegState> {
+class FfmpegController {
   late final FfmpegService ffmpegService;
+  late FFmpeg? _ffmpegInstance;
 
-  @override
-  FfmpegState build() {
-    ffmpegService = ref.watch(ffmpegServiceProvider);
+  FfmpegController() {
+    ffmpegService = FfmpegService();
 
     // Start loading FFmpeg asynchronously
     _loadFFmpegScript();
+  }
 
-    // While FFmpeg is loading, return the state as loading
-    return const FfmpegState(
-      ffmpeg: AsyncLoading(),
-    );
+  FfmpegController.test(FfmpegService service) {
+    ffmpegService = service;
+
+    // Start loading FFmpeg asynchronously
+    _loadFFmpegScript();
   }
 
   // Function to load FFmpeg asynchronously and update the state
   Future<void> _loadFFmpegScript() async {
     try {
       // Load the FFmpeg script
-      final ffmpegInstance = await ffmpegService.loadFFmpegScript();
-
-      // Once loaded, update the state with the loaded FFmpeg instance
-      state = state.copyWith(ffmpeg: AsyncData(ffmpegInstance));
-    } catch (e, st) {
-      // If there's an error, update the state with an error
-      state = state.copyWith(ffmpeg: AsyncError(e, st));
+      _ffmpegInstance = await ffmpegService.loadFFmpegScript();
+    } catch (e) {
       debugPrint("Error loading FFmpeg: $e");
     }
   }
 
   Future<String> getVideoThumbnail(XFile videoFile) {
-    return ffmpegService.getVideoThumbnail(videoFile,
-        ffmpeg: state.ffmpeg.value);
+    return ffmpegService.getVideoThumbnail(videoFile, ffmpeg: _ffmpegInstance);
   }
 
   Future<String> trimVideo(XFile videoFile, String start, String duration) {
     return ffmpegService.editVideo(videoFile,
-        start: start, duration: duration, ffmpeg: state.ffmpeg.value);
+        start: start, duration: duration, ffmpeg: _ffmpegInstance);
   }
 
   Future<String> compressVideo(XFile videoFile) {
     return ffmpegService.editVideo(videoFile,
-        ffmpeg: state.ffmpeg.value, operation: FfmpegOperation.compress);
+        ffmpeg: _ffmpegInstance, operation: FfmpegOperation.compress);
   }
 }

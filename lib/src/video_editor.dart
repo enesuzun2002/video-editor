@@ -1,20 +1,13 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:cross_file/cross_file.dart';
 
 import 'business_logic/ffmpeg/ffmpeg_controller.dart';
 
-final videoEditorProvider = Provider.autoDispose((ref) {
-  // Initialize ffmpeg here
-  ref.watch(ffmpegControllerProvider);
-  // Get the notifier for original ffmpeg controller
-  final ffmpegControllerNotifier = ref.watch(ffmpegControllerProvider.notifier);
-  return VideoEditor._(ffmpegControllerNotifier);
-});
-
 class VideoEditor {
-  final FfmpegController ffmpegController;
+  late final FfmpegController ffmpegController;
 
-  VideoEditor._(this.ffmpegController);
+  VideoEditor() {
+    ffmpegController = FfmpegController();
+  }
 
   /// Compress a video file
   Future<String> compressVideo(

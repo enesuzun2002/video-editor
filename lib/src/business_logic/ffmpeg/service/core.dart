@@ -1,15 +1,10 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import '../ffmpeg_operation.dart';
 
 import 'ffmpeg_service.dart'
     if (dart.library.html) 'ffmpeg_service_web.dart'
     if (dart.library.io) 'ffmpeg_service_mobile.dart';
-
-final ffmpegServiceProvider = Provider<FfmpegService>((ref) {
-  return FfmpegService();
-});
 
 abstract class FfmpegService {
   factory FfmpegService() => getPlatformFfmpegService();

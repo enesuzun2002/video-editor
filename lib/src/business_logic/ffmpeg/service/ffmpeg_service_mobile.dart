@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:video_editor/src/business_logic/ffmpeg/service/core.dart';
 
