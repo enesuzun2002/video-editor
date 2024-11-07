@@ -13,9 +13,9 @@ class FfmpegServiceWeb implements FfmpegService {
   Future<FFmpeg?> loadFFmpegScript() async {
     try {
       final script = html.ScriptElement()
-        ..src = 'packages/video_editor/assets/ffmpeg/ffmpeg.min.js'
+        ..src = 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js'
         ..crossOrigin = 'anonymous'
-        ..defer = true;
+        ..async = true;
       html.document.body!.append(script);
       await script.onLoad.first;
 
@@ -23,9 +23,8 @@ class FfmpegServiceWeb implements FfmpegService {
 
       ffmpeg = createFFmpeg(CreateFFmpegParam(
           log: true,
-          corePath: Uri.base
-              .resolve('packages/video_editor/assets/ffmpeg/ffmpeg-core.js')
-              .toString()));
+          corePath:
+              "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"));
       // Wait for ffmpeg to load
       await ffmpeg.load();
 
