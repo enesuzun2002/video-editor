@@ -1,4 +1,4 @@
-# Video Editor
+# Simple Video Editor
 
 A cross-platform video editing application built with Flutter, supporting iOS, Android and Web.
 
