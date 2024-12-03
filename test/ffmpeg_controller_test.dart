@@ -24,6 +24,10 @@ class MockFFmpegService implements FfmpegService {
     String? duration,
     FFmpeg? ffmpeg,
     FfmpegOperation operation = FfmpegOperation.trim,
+    // constant rate factor
+    String compressionRate = "25",
+    bool scale = true,
+    String quality = "720",
   }) async {
     return 'mock_edited_video_path';
   }

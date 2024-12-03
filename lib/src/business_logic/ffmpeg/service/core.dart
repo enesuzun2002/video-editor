@@ -16,9 +16,15 @@ abstract class FfmpegService {
   Future<String> getVideoThumbnail(XFile video, {FFmpeg? ffmpeg});
 
   // `editVideo` is also optional with a default unimplemented method.
-  Future<String> editVideo(XFile video,
-      {String? start,
-      String? duration,
-      FFmpeg? ffmpeg,
-      FfmpegOperation operation = FfmpegOperation.trim});
+  Future<String> editVideo(
+    XFile video, {
+    String? start,
+    String? duration,
+    FFmpeg? ffmpeg,
+    FfmpegOperation operation = FfmpegOperation.trim,
+    // constant rate factor
+    String compressionRate = "25",
+    bool scale = true,
+    String quality = "720",
+  });
 }

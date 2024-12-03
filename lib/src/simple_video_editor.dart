@@ -11,8 +11,12 @@ class VideoEditor {
 
   /// Compress a video file
   Future<String> compressVideo(
-    XFile videoFile,
-  ) async {
+    XFile videoFile, {
+    // constant rate factor
+    String compressionRate = "25",
+    bool scale = true,
+    String quality = "720",
+  }) async {
     return await ffmpegController.compressVideo(videoFile);
   }
 

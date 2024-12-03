@@ -57,11 +57,16 @@ class FfmpegServiceWeb implements FfmpegService {
   }
 
   @override
-  Future<String> editVideo(XFile video,
-      {String? start,
-      String? duration,
-      FFmpeg? ffmpeg,
-      FfmpegOperation operation = FfmpegOperation.trim}) async {
+  Future<String> editVideo(
+    XFile video, {
+    String? start,
+    String? duration,
+    FFmpeg? ffmpeg,
+    FfmpegOperation operation = FfmpegOperation.trim, // constant rate factor
+    String compressionRate = "25",
+    bool scale = true,
+    String quality = "720",
+  }) async {
     List<String> command = [
       if (operation == FfmpegOperation.trim) ...[
         // start

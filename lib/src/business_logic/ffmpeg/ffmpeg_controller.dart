@@ -41,7 +41,13 @@ class FfmpegController {
         start: start, duration: duration, ffmpeg: _ffmpegInstance);
   }
 
-  Future<String> compressVideo(XFile videoFile) {
+  Future<String> compressVideo(
+    XFile videoFile, {
+    // constant rate factor
+    String compressionRate = "25",
+    bool scale = true,
+    String quality = "720",
+  }) {
     return ffmpegService.editVideo(videoFile,
         ffmpeg: _ffmpegInstance, operation: FfmpegOperation.compress);
   }
