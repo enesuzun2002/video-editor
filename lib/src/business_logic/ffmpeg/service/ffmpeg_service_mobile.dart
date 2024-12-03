@@ -5,6 +5,7 @@ import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 
 import '../ffmpeg_operation.dart';
@@ -87,9 +88,12 @@ class FfmpegServiceMobile implements FfmpegService {
     // Start the timer
     final startTime = DateTime.now();
 
+    final token = RootIsolateToken.instance;
+
     final result = await compute(_editVideo, {
       "video": video,
       "command": command.join(" "),
+      "token": token,
     });
 
     // Stop the timer
@@ -104,6 +108,9 @@ class FfmpegServiceMobile implements FfmpegService {
     // Args
     XFile video = args["video"];
     String command = args["command"];
+
+    var token = args["token"];
+    BackgroundIsolateBinaryMessenger.ensureInitialized(token);
 
     String trimmedVideoPath = "${dirname(video.path)}/trimmed_video.mp4";
     final outputFile = File(trimmedVideoPath);
