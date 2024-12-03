@@ -12,13 +12,14 @@ import 'core.dart';
 
 class FfmpegServiceMobile implements FfmpegService {
   @override
-  Future<String> getVideoThumbnail(XFile video, {FFmpeg? ffmpeg}) async {
-    return await _getVideoThumbnail(video);
+  Future<String> getVideoThumbnail(String path, {FFmpeg? ffmpeg}) async {
+    return await _getVideoThumbnail(path);
   }
 
   Future<String> _getVideoThumbnail(
-    XFile video,
+    String path,
   ) async {
+    XFile video = XFile(path);
     String thumbnailPath = video.name
         .replaceRange(video.path.length - 3, video.path.length, "jpg");
     String command =
@@ -35,7 +36,7 @@ class FfmpegServiceMobile implements FfmpegService {
 
   @override
   Future<String> editVideo(
-    XFile video, {
+    String path, {
     String? start,
     String? duration,
     FFmpeg? ffmpeg,
@@ -45,6 +46,7 @@ class FfmpegServiceMobile implements FfmpegService {
     bool scale = true,
     String quality = "720",
   }) async {
+    XFile video = XFile(path);
     List<String> command = [
       if (operation == FfmpegOperation.trim) ...[
         // start

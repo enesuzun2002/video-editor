@@ -35,13 +35,14 @@ class FfmpegServiceWeb implements FfmpegService {
   }
 
   @override
-  Future<String> getVideoThumbnail(XFile video, {FFmpeg? ffmpeg}) async {
+  Future<String> getVideoThumbnail(String path, {FFmpeg? ffmpeg}) async {
     if (ffmpeg == null || !ffmpeg.isLoaded()) throw ("FFMPEG isn't loaded!");
-    return await _getVideoThumbnail(video, ffmpeg: ffmpeg);
+    return await _getVideoThumbnail(path, ffmpeg: ffmpeg);
   }
 
-  Future<String> _getVideoThumbnail(XFile video,
+  Future<String> _getVideoThumbnail(String path,
       {required FFmpeg ffmpeg}) async {
+    XFile video = XFile(path);
     String inputFile = video.name;
     String outputFile =
         inputFile.replaceRange(inputFile.length - 3, inputFile.length, "jpg");
@@ -58,7 +59,7 @@ class FfmpegServiceWeb implements FfmpegService {
 
   @override
   Future<String> editVideo(
-    XFile video, {
+    String path, {
     String? start,
     String? duration,
     FFmpeg? ffmpeg,
@@ -67,6 +68,7 @@ class FfmpegServiceWeb implements FfmpegService {
     bool scale = true,
     String quality = "720",
   }) async {
+    XFile video = XFile(path);
     List<String> command = [
       if (operation == FfmpegOperation.trim) ...[
         // start

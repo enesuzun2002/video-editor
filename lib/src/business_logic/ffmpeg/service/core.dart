@@ -13,11 +13,11 @@ abstract class FfmpegService {
   Future<FFmpeg?> loadFFmpegScript();
 
   // `getVideoThumbnail` is now an optional method.
-  Future<String> getVideoThumbnail(XFile video, {FFmpeg? ffmpeg});
+  Future<String> getVideoThumbnail(String path, {FFmpeg? ffmpeg});
 
   // `editVideo` is also optional with a default unimplemented method.
   Future<String> editVideo(
-    XFile video, {
+    String path, {
     String? start,
     String? duration,
     FFmpeg? ffmpeg,

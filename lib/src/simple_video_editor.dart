@@ -1,5 +1,3 @@
-import 'package:cross_file/cross_file.dart';
-
 import 'business_logic/ffmpeg/ffmpeg_controller.dart';
 
 class VideoEditor {
@@ -11,29 +9,29 @@ class VideoEditor {
 
   /// Compress a video file
   Future<String> compressVideo(
-    XFile videoFile, {
+    String path, {
     // constant rate factor
     String compressionRate = "25",
     bool scale = true,
     String quality = "720",
   }) async {
-    return await ffmpegController.compressVideo(videoFile,
+    return await ffmpegController.compressVideo(path,
         compressionRate: compressionRate, scale: scale, quality: quality);
   }
 
   /// Trim a video file
   Future<String?> trimVideo(
-    XFile videoFile, {
+    String path, {
     required String start,
     required String duration,
   }) async {
-    return await ffmpegController.trimVideo(videoFile, start, duration);
+    return await ffmpegController.trimVideo(path, start, duration);
   }
 
   /// Generate a thumbnail from a video
   Future<String?> generateThumbnail(
-    XFile videoFile,
+    String path,
   ) async {
-    return await ffmpegController.getVideoThumbnail(videoFile);
+    return await ffmpegController.getVideoThumbnail(path);
   }
 }

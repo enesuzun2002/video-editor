@@ -1,4 +1,3 @@
-import 'package:cross_file/cross_file.dart';
 import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_video_editor/src/business_logic/ffmpeg/ffmpeg_operation.dart';
@@ -13,13 +12,13 @@ class MockFFmpegService implements FfmpegService {
   }
 
   @override
-  Future<String> getVideoThumbnail(XFile videoFile, {FFmpeg? ffmpeg}) async {
+  Future<String> getVideoThumbnail(String path, {FFmpeg? ffmpeg}) async {
     return 'mock_thumbnail_path';
   }
 
   @override
   Future<String> editVideo(
-    XFile videoFile, {
+    String path, {
     String? start,
     String? duration,
     FFmpeg? ffmpeg,
@@ -44,15 +43,14 @@ void main() {
 
   group('FFmpeg Controller Tests', () {
     test('getVideoThumbnail returns expected path', () async {
-      final mockVideo = XFile('test_video.mp4');
-      final thumbnailPath = await controller.getVideoThumbnail(mockVideo);
+      final thumbnailPath =
+          await controller.getVideoThumbnail('test_video.mp4');
       expect(thumbnailPath, equals('mock_thumbnail_path'));
     });
 
     test('trimVideo returns expected path', () async {
-      final mockVideo = XFile('test_video.mp4');
       final editedPath = await controller.trimVideo(
-        mockVideo,
+        'test_video.mp4',
         '00:00:00',
         '00:00:10',
       );
@@ -60,8 +58,7 @@ void main() {
     });
 
     test('compressVideo returns expected path', () async {
-      final mockVideo = XFile('test_video.mp4');
-      final compressedPath = await controller.compressVideo(mockVideo);
+      final compressedPath = await controller.compressVideo('test_video.mp4');
       expect(compressedPath, equals('mock_edited_video_path'));
     });
   });
