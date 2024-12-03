@@ -34,11 +34,17 @@ class FfmpegServiceMobile implements FfmpegService {
   }
 
   @override
-  Future<String> editVideo(XFile video,
-      {String? start,
-      String? duration,
-      FFmpeg? ffmpeg,
-      FfmpegOperation operation = FfmpegOperation.trim}) async {
+  Future<String> editVideo(
+    XFile video, {
+    String? start,
+    String? duration,
+    FFmpeg? ffmpeg,
+    FfmpegOperation operation = FfmpegOperation.trim,
+    // constant rate factor
+    String compressionRate = "25",
+    bool scale = true,
+    String quality = "720",
+  }) async {
     List<String> command = [
       if (operation == FfmpegOperation.trim) ...[
         // start
@@ -49,8 +55,10 @@ class FfmpegServiceMobile implements FfmpegService {
         duration!,
       ],
       // scale
-      "-vf",
-      "scale='if(gt(iw/ih,1),-2,720)':'if(gt(iw/ih,1),720,-2)'",
+      if (scale) ...[
+        "-vf",
+        "scale='if(gt(iw/ih,1),-2,$quality)':'if(gt(iw/ih,1),$quality,-2)'",
+      ],
       // video codec
       "-c:v",
       "libx264",
@@ -68,7 +76,7 @@ class FfmpegServiceMobile implements FfmpegService {
       "superfast",
       // Constant Rate Factor (lower means better quality, higher means faster)
       "-crf",
-      "25",
+      compressionRate,
       // fast start for streaming
       "-movflags",
       "+faststart",
