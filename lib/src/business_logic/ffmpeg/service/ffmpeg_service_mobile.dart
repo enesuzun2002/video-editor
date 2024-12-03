@@ -6,9 +6,9 @@ import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
-import 'package:video_editor/src/business_logic/ffmpeg/service/core.dart';
 
 import '../ffmpeg_operation.dart';
+import 'core.dart';
 
 class FfmpegServiceMobile implements FfmpegService {
   @override

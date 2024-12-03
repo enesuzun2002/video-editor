@@ -1,4 +1,4 @@
-name: video_editor
+name: simple_video_editor
 description: A Flutter video editing library with compression, trimming and thumbnail generation capabilities.
 version: 0.0.1
 homepage: https://github.com/enesuzun2002/video_editor

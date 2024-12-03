@@ -1,9 +1,9 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_editor/src/business_logic/ffmpeg/ffmpeg_operation.dart';
-import 'package:video_editor/src/business_logic/ffmpeg/ffmpeg_controller.dart';
-import 'package:video_editor/src/business_logic/ffmpeg/service/core.dart';
+import 'package:simple_video_editor/src/business_logic/ffmpeg/ffmpeg_operation.dart';
+import 'package:simple_video_editor/src/business_logic/ffmpeg/ffmpeg_controller.dart';
+import 'package:simple_video_editor/src/business_logic/ffmpeg/service/core.dart';
 
 // Mock FFmpeg service
 class MockFFmpegService implements FfmpegService {
