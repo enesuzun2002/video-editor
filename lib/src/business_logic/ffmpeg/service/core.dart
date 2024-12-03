@@ -1,4 +1,3 @@
-import 'package:cross_file/cross_file.dart';
 import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import '../ffmpeg_operation.dart';
 
