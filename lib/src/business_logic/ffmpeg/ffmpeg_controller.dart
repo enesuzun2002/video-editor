@@ -5,7 +5,7 @@ import 'service/core.dart';
 
 class FfmpegController {
   late final FfmpegService ffmpegService;
-  late FFmpeg? _ffmpegInstance;
+  FFmpeg? _ffmpegInstance;
 
   FfmpegController() {
     ffmpegService = FfmpegService();
