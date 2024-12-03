@@ -17,7 +17,8 @@ class VideoEditor {
     bool scale = true,
     String quality = "720",
   }) async {
-    return await ffmpegController.compressVideo(videoFile);
+    return await ffmpegController.compressVideo(videoFile,
+        compressionRate: compressionRate, scale: scale, quality: quality);
   }
 
   /// Trim a video file

@@ -49,6 +49,10 @@ class FfmpegController {
     String quality = "720",
   }) {
     return ffmpegService.editVideo(videoFile,
-        ffmpeg: _ffmpegInstance, operation: FfmpegOperation.compress);
+        ffmpeg: _ffmpegInstance,
+        operation: FfmpegOperation.compress,
+        compressionRate: compressionRate,
+        scale: scale,
+        quality: quality);
   }
 }
