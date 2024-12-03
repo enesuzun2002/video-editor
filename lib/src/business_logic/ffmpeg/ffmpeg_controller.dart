@@ -31,12 +31,12 @@ class FfmpegController {
     }
   }
 
-  Future<String> getVideoThumbnail(String path) {
-    return ffmpegService.getVideoThumbnail(path, ffmpeg: _ffmpegInstance);
+  Future<String> getVideoThumbnail(String path) async {
+    return await ffmpegService.getVideoThumbnail(path, ffmpeg: _ffmpegInstance);
   }
 
-  Future<String> trimVideo(String path, String start, String duration) {
-    return ffmpegService.editVideo(path,
+  Future<String> trimVideo(String path, String start, String duration) async {
+    return await ffmpegService.editVideo(path,
         start: start, duration: duration, ffmpeg: _ffmpegInstance);
   }
 
@@ -46,8 +46,8 @@ class FfmpegController {
     String compressionRate = "25",
     bool scale = true,
     String quality = "720",
-  }) {
-    return ffmpegService.editVideo(path,
+  }) async {
+    return await ffmpegService.editVideo(path,
         ffmpeg: _ffmpegInstance,
         operation: FfmpegOperation.compress,
         compressionRate: compressionRate,
