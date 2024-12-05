@@ -1,9 +1,9 @@
 import 'business_logic/ffmpeg/ffmpeg_controller.dart';
 
-class VideoEditor {
+class SimpleVideoEditor {
   late final FfmpegController ffmpegController;
 
-  VideoEditor() {
+  SimpleVideoEditor() {
     ffmpegController = FfmpegController();
   }
 
